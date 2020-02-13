@@ -22,7 +22,7 @@ def check_but():
         return 'B'
     return None
 
-prog = [("brownie","brownie.py"),("br_1000","brownie1000.py"),("br_learn","brownielearn.py"),("-",""),("-","")]
+prog = [("brownie","brownie20.py"),("br_1000","brownie1000.py"),("br_learn","brownielearn.py"),("-",""),("-","")]
 
 lcd.init()
 lcd.rotation(2)
