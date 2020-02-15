@@ -36,6 +36,20 @@ https://micropython-docs-ja.readthedocs.io/ja/latest/index.html
 【解説】M5STICKVのPYTHONプログラミング　～液晶編～ｓ
 https://hellobreak.net/
 
+M5StickVのGroveコネクタを使う - ブザーを鳴らす
+https://hrkz.tokyo/m5stickv-grove/
+
+Seeed-Studio / grove.py
+https://github.com/Seeed-Studio/grove.py/tree/master/doc
+
+MaixPy(MicroPython)でBlinkする
+https://beta-notes.way-nifty.com/blog/2020/01/post-531c9b.html
+
+Grove端子を利用する - UART
+https://riscv.love/024
+
+
+
 
 AI+IoTなデバイスをお手軽に作れるM5StickVとSORACOM LTE-M Button Plus
 (ノートブックで転移学習)
@@ -52,6 +66,7 @@ https://raspberrypi.mongonta.com/howto-make-kmodel-of-multiple-object/
 https://github.com/mongonta0716/m5stickv-tips
 
 https://gist.github.com/ksasao
+https://github.com/anoken/purin_wo_motto_mimamoru_gijutsu
 
 -------------------
 ＱＲ
@@ -64,4 +79,5 @@ https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=go
 
 
 音声
+http://open-jtalk.sp.nitech.ac.jp/
 http://cloud.ai-j.jp/hackathon/index.php
