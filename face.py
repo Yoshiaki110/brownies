@@ -4,6 +4,22 @@ import time
 import uos
 import sys
 from pmu import axp192
+from machine import Timer,PWM
+import time
+
+
+tim = Timer(Timer.TIMER0, Timer.CHANNEL0, mode=Timer.MODE_PWM)
+ch = PWM(tim, freq=50, duty=2.5, pin=34)
+cduty = 4
+def setAngle(val):
+    global cduty
+    tmp = cduty + val
+    print("sv " + str(cduty) + '+' + str(val) + '=' + str(tmp))
+    if tmp >= 3 and tmp < 10:
+        ch.duty(cang)
+        cduty = tmp
+
+setAngle(cang)
 
 pmu = axp192()
 pmu.enablePMICSleepMode(True)
@@ -108,10 +124,27 @@ try:
         img = sensor.snapshot() # Take an image from sensor
         bbox = kpu.run_yolo2(task, img) # Run the detection routine
         if bbox:
-            print(str(len(bbox)))
+            bbox.sort(reverse=True, key=lambda x: x.rect()[2] * x.rect()[3])
+            c = bbox[0].rect()[0] + (bbox[0].rect()[2] / 2)
+            print(str(c) + ' ' + str(len(bbox)))
+            if c < 120:
+                setAngle(0.1)
+            if c > 160:
+                setAngle(-0.1)
+            first = True;
             for i in bbox:
-                print(i)
-                img.draw_rectangle(i.rect())
+#                print(i)
+#                c = i.rect()[0] + (i.rect()[2] / 2)
+#                print('x:' + str(c) + ' sz:' + str(i.rect()[2] * i.rect()[3]))
+#                img.draw_rectangle(i.rect(), (255,255,255), Thickness=5)
+                color = (255,0,0) if first else (255,255,255)
+                thick = 5 if first else 1
+                first = False
+                r = list(i.rect())
+                for j in range(thick):
+                    img.draw_rectangle(r, color)
+                    r[0] = r[0] + 1
+                    r[1] = r[1] + 1
         lcd.display(img)
 
         if but_a.value() == 0 and but_stu == 1:
