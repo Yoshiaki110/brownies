@@ -16,10 +16,10 @@ def setAngle(val):
     tmp = cduty + val
     print("sv " + str(cduty) + '+' + str(val) + '=' + str(tmp))
     if tmp >= 3 and tmp < 10:
-        ch.duty(cang)
+        ch.duty(cduty)
         cduty = tmp
 
-setAngle(cang)
+setAngle(cduty)
 
 pmu = axp192()
 pmu.enablePMICSleepMode(True)
