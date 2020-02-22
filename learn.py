@@ -8,6 +8,7 @@
 import KPU as kpu
 import sensor
 import lcd
+import image
 import time
 import uos
 import gc
@@ -61,6 +62,46 @@ def get_nearest(feature_list, feature):
             vec = v
     return name,min_dist,vec
 
+def disp(title, item):
+    print('disp')
+    lcd.clear()
+    img = image.Image()
+    img.draw_string(0, 0, '<<' + title + '>>', (255,0,0), scale=3)
+    lcd.display(img)
+    for i in range(4):
+        c = " " if i != 1 else ">"
+        img.draw_string(0, i * 25 + 25, c + item[i], scale=3)
+        lcd.display(img)
+
+def menu(title, item):
+    time.sleep(0.3)
+    print("menu 1")
+    disp(title, item)
+    print("menu 2")
+    while(True):
+        if but_a.value() == 0:
+            print(item[1])
+            time.sleep(0.3)
+            #return item[2]
+            print("menu 3")
+            if len(item[1]) > 0:
+                break
+        if but_b.value() == 0:
+            print("menu 4")
+            tmp = item.pop(0)
+            item.append(tmp)
+            print("menu 5")
+            disp(title, item)
+            print("menu 6")
+            time.sleep(0.3)
+    return item[1]
+
+#
+# initialize
+#
+lcd.init()
+lcd.rotation(2)
+
 #
 # main
 #
@@ -83,15 +124,22 @@ try:
         if but_a.value() == 0:
             print('@@@ recording')
             feature = get_feature(task)
-            feature_list.append([name,feature])
+            time.sleep(0.3)
+            ret = menu(" SAVE ", ["Cancel","A","B","C"])
+            if ret != "Cancel":
+                feature_list.append([ret,feature])
             gc.collect()
             # print(gc.mem_free())
             kpu.fmap_free(feature)
             print('@@@ record finished')
             continue
         if but_b.value() == 0:
-            print('@@@ reset')
-            feature_list = []
+            print('@@@ reset 0')
+            ret = menu("CLEAR", ["OK","Cancel","",""])
+            print('@@@ reset 1')
+            if ret == "OK":
+                feature_list = []
+            time.sleep(0.3)
             continue
 
         img = sensor.snapshot()
