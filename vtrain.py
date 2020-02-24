@@ -26,7 +26,7 @@ except:
     lcd.draw_string(lcd.width()//2-100,lcd.height()//2-4, "Error: Cannot find start.jpg", lcd.WHITE, lcd.RED)
 
 
-task = kpu.load("/sd/7c56cbd53ef0830b_mbnet10_quant.kmodel")
+task = kpu.load("/sd/model/7c56cbd53ef0830b_mbnet10_quant.kmodel")
 
 labels=["1","2","3"] #You can check the numbers here to real names.
 
