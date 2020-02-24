@@ -125,7 +125,7 @@ try:
             print('@@@ recording')
             feature = get_feature(task)
             time.sleep(0.3)
-            ret = menu(" SAVE ", ["Cancel","A","B","C"])
+            ret = menu(" SAVE ", ["Cancel","1st","2nd","3rd","4th","5th",""])
             if ret != "Cancel":
                 feature_list.append([ret,feature])
             gc.collect()
@@ -153,7 +153,7 @@ try:
         print("name:" + name + " dist:" + str(dist))
         if dist < 200:
             img.draw_rectangle(1,46,222,132,color=(0,255,0),thickness=3)
-            img.draw_string(2, 47 +30, "%s"%(name), scale=3)
+            img.draw_string(8, 47 +30, "%s"%(name), scale=3)
             print("[DETECTED]: on:" + old_name + " n:" + name)
             if old_name != name:
                 lcd.display(img)
