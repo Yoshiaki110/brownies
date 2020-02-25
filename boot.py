@@ -28,6 +28,7 @@ prog = [("brownie","brownie20.py"),
         ("face","face.py"),
         ("learn","learn.py"),
         ("v-train","vtrain.py"),
+        ("janken","janken.py"),
         ("-","")]
 
 lcd.init()
