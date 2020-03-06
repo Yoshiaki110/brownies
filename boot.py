@@ -1,3 +1,4 @@
+import sys
 import lcd
 import image
 from fpioa_manager import *
@@ -29,6 +30,7 @@ prog = [("brownie","brownie20.py"),
         ("learn","learn.py"),
         ("v-train","vtrain.py"),
         ("janken","janken.py"),
+        ("poweroff","poweroff"),
         ("-","")]
 
 lcd.init()
@@ -52,7 +54,11 @@ while(True):
         print(prog[2][1])
         if len(prog[2][1]) == 0:
             print('not exec')
+        elif prog[2][1] == 'poweroff':
+            print('exit')
+            sys.exit()
         else:
+            # exec(open("xx.py").read()) でできるかも
             cmd = 'import ' + prog[2][1]
             print('exec ' + cmd)
             exec(cmd)
