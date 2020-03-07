@@ -59,10 +59,14 @@ def play_sound(filename):
 def shutter():
     global cnt
     img = sensor.snapshot()
-    img.save("/sd/DCIM/" + '{:04d}'.format(cnt) + ".jpg", quality=95)
+    fn = "/sd/DCIM/" + '{:04d}'.format(cnt) + ".jpg"
+    img.save(fn, quality=95)
     cnt += 1
     print("shutter")
     play_sound("/sd/kacha.wav")
+    img = image.Image(fn, copy_to_fb = True)
+    lcd.display(img)
+    time.sleep(3)
 
 def selftimer():
     print("selftimer 3")
