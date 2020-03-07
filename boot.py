@@ -30,6 +30,7 @@ prog = [("brownie","brownie20.py"),
         ("learn","learn.py"),
         ("v-train","vtrain.py"),
         ("janken","janken.py"),
+        ("camera","camera.py"),
         ("poweroff","poweroff"),
         ("-","")]
 
