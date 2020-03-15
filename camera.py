@@ -25,10 +25,19 @@ but_a=GPIO(GPIO.GPIO1, GPIO.IN, GPIO.PULL_UP) #PULL_UP is required here!
 fm.register(board_info.BUTTON_B, fm.fpioa.GPIO2)
 but_b = GPIO(GPIO.GPIO2, GPIO.IN, GPIO.PULL_UP) #PULL_UP is required here!
 
+fm.register(34, fm.fpioa.GPIOHS0, force=True)
+p34=GPIO(GPIO.GPIOHS0, GPIO.IN, GPIO.PULL_UP)
+
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
 sensor.set_framesize(sensor.QVGA)
 sensor.skip_frames(time = 2000)
+
+exbtn = True
+if p34.value():
+    time.sleep(0.2)
+    if p34.value():
+        exbtn = False
 
 try:
     os.mkdir("/sd/DCIM")
@@ -90,3 +99,8 @@ while(True):
         selftimer()
     if not but_b.value():
         shutter()
+    if exbtn:
+        if p34.value():
+            time.sleep(0.2)
+            if p34.value():
+                selftimer()

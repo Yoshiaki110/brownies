@@ -81,3 +81,10 @@ https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=go
 音声
 http://open-jtalk.sp.nitech.ac.jp/
 http://cloud.ai-j.jp/hackathon/index.php
+
+
+-------------
+プログラム実行は、import でなく下記のほうがいい
+
+with open("hello.py") as f:
+    exec(f.read())
