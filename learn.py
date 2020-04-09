@@ -1,4 +1,4 @@
-#
+# 学習できるプログラム
 #
 # Usage :
 # Button A : Shutter / OK
@@ -48,6 +48,7 @@ def get_feature(task):
     lcd.display(img)
     feature = kpu.forward(task,img)
     print('get_feature')
+    gc.collect()
     return np.array(feature[:])
 
 def get_nearest(feature_list, feature):
@@ -124,6 +125,7 @@ try:
         if but_a.value() == 0:
             print('@@@ recording')
             feature = get_feature(task)
+            gc.collect()
             time.sleep(0.3)
             ret = menu(" SAVE ", ["Cancel","1st","2nd","3rd","4th","5th",""])
             if ret != "Cancel":
@@ -150,7 +152,7 @@ try:
 
         # get nearest target
         name,dist,_ = get_nearest(feature_list, p)
-        print("name:" + name + " dist:" + str(dist))
+        print("name:" + name + " dist:" + str(dist) + " mem:" + str(gc.mem_free()))
         if dist < 200:
             img.draw_rectangle(1,46,222,132,color=(0,255,0),thickness=3)
             img.draw_string(8, 47 +30, "%s"%(name), scale=3)

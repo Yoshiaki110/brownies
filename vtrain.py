@@ -1,3 +1,5 @@
+# vtrainのプログラム
+
 import image
 import lcd
 import sensor
