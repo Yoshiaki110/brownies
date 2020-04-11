@@ -26,14 +26,15 @@ def check_but():
 prog = [("brownie","brownie20.py"),
         ("br_1000","brownie1000.py"),
         ("br_learn","brownielearn.py"),
-        ("face","face.py"),             // yoro 顔認識、サーボで顔追跡
-        ("face-rv","facetrack.py"),     // yoro 顔認識、RoverCで顔追跡
-        ("learn","learn.py"),           // QR使わないbrownielearn
-        ("v-train","vtrain.py"),        // v-train
-        ("janken","janken.py"),         // ぐーちょきぱの判定
-        ("camera","camera.py"),         // 写真撮影
-        ("video_r","video_r.py"),       // 動画撮影
-        ("video_p","video_p.py"),       // 動画再生
+        ("face","face.py"),             # yoro 顔認識、サーボで顔追跡
+        ("face-rv","facetrack.py"),     # yoro 顔認識、RoverCで顔追跡
+        ("learn","learn.py"),           # QR使わないbrownielearn
+        ("distance","distance.py"),     # 距離計測、RoverCで自動ブレーキ
+        ("v-train","vtrain.py"),        # v-train
+        ("janken","janken.py"),         # ぐーちょきぱの判定
+        ("camera","camera.py"),         # 写真撮影
+        ("video_r","video_r.py"),       # 動画撮影
+        ("video_p","video_p.py"),       # 動画再生
         ("poweroff","poweroff"),
         ("-","")]
 
