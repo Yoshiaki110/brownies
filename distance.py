@@ -15,6 +15,15 @@ import gc
 import ulab as np
 from fpioa_manager import *
 from Maix import utils, GPIO
+from machine import UART
+fm.register(35, fm.fpioa.UART2_TX, force=True)
+fm.register(34, fm.fpioa.UART2_RX, force=True)
+uart_Port = UART(UART.UART2, 115200,8,0,0, timeout=1000, read_buf_len= 4096)
+def u_send(d):
+    data_packet = bytearray([0xFF,0xAA])
+    data_packet.append(d % 256)
+    uart_Port.write(data_packet)
+    print("send " + str(d))
 
 fm.register(board_info.BUTTON_A, fm.fpioa.GPIO1)
 but_a=GPIO(GPIO.GPIO1, GPIO.IN, GPIO.PULL_UP) #PULL_UP is required here!
@@ -163,6 +172,10 @@ try:
             dist_str = "Unmeasur"
             if (dist < 100.0):
                 dist_str = "%.1fcm"%(dist)
+            if (dist < 50.0):
+                u_send(202)
+            else:
+                u_send(0)
 
             print("[DISTANCE]: " + dist_str)
             img.draw_string(2, 47, dist_str, scale=3)
