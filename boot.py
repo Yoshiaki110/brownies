@@ -30,6 +30,7 @@ prog = [("brownie","brownie20.py"),
         ("face-rv","facetrack.py"),     # yoro 顔認識、RoverCで顔追跡
         ("learn","learn.py"),           # QR使わないbrownielearn
         ("distance","distance.py"),     # 距離計測、RoverCで自動ブレーキ
+        ("oshaku","oshaku.py"),         # 遠隔お酌
         ("v-train","vtrain.py"),        # v-train
         ("janken","janken.py"),         # ぐーちょきぱの判定
         ("camera","camera.py"),         # 写真撮影

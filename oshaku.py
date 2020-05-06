@@ -1,10 +1,12 @@
-# 学習できるプログラム
+# 遠隔お酌
 #
 # Usage :
 # Button A : Shutter / OK
 #        B : Menu    / Cancel
 # Firmware: maixpy_v0.5.0_9_g8eba07d_m5stickv.bin
 #
+# GROVE 黄色：34 白:35
+
 import KPU as kpu
 import sensor
 import lcd
@@ -15,17 +17,42 @@ import gc
 import ulab as np
 from fpioa_manager import *
 from Maix import utils, GPIO
-from machine import Timer,PWM
+from machine import Timer,PWM,I2C
 
-FREQ = 20
-PULSE_MIN = 0.6
-PULSE_MAX = 2.3
+utils.gc_heap_size(400000)
+
+# LCD初期化
+lcd.init()
+lcd.rotation(2)
+
+i2c = I2C(I2C.I2C0, freq=400000, scl=28, sda=29)
+def set_backlight(level):
+    if level > 8:
+        level = 8
+    if level < 0:
+        level = 0
+    val = (level+7) << 4
+    i2c.writeto_mem(0x34, 0x91,int(val))
+
+try:
+    img = image.Image("/sd/enkaku.jpg")
+    set_backlight(0)
+    lcd.display(img)
+    for i in range(9):
+        set_backlight(i)
+        time.sleep(0.1)
+    time.sleep(1)
+except Exception as e:
+    print(e)
+
+# サーボ関連
+# FREQ は 50じゃない
 FREQ = 20
 PULSE_MIN = 0.6
 PULSE_MAX = 2.3
 
 tim = Timer(Timer.TIMER0, Timer.CHANNEL0, mode=Timer.MODE_PWM)
-ch = PWM(tim, freq=50, duty=2.5, pin=34)
+ch = PWM(tim, freq=50, duty=2.5, pin=35)
 arg = {-90:2.5, 0:7.25, 90:12}	# arg:duty
 
 def setAngle(ang):
@@ -33,34 +60,36 @@ def setAngle(ang):
     pich = diff / 180
     pulse = ang * pich + PULSE_MIN
     duty = pulse / FREQ * 100
-    #print(duty)
+    print("-------- ang {} ----- duty {}".format(ang, duty))
+    #print("----------------- duty" + str(duty))
     ch.duty(duty)
+setAngle(0)
 
+# ボタンの初期化
 fm.register(board_info.BUTTON_A, fm.fpioa.GPIO1)
 but_a=GPIO(GPIO.GPIO1, GPIO.IN, GPIO.PULL_UP) #PULL_UP is required here!
 fm.register(board_info.BUTTON_B, fm.fpioa.GPIO2)
 but_b = GPIO(GPIO.GPIO2, GPIO.IN, GPIO.PULL_UP) #PULL_UP is required here!
 
-utils.gc_heap_size(400000)
+# カメラ初期化
+err_counter = 0
+while 1:
+    try:
+        sensor.reset() #Reset sensor may failed, let's try some times
+        break
+    except:
+        err_counter = err_counter + 1
+        if err_counter == 20:
+            lcd.draw_string(lcd.width()//2-100,lcd.height()//2-4, "Error: Sensor Init Failed", lcd.WHITE, lcd.RED)
+        time.sleep(0.1)
+        continue
 
-def initialize_camera():
-    err_counter = 0
-    while 1:
-        try:
-            sensor.reset() #Reset sensor may failed, let's try some times
-            break
-        except:
-            err_counter = err_counter + 1
-            if err_counter == 20:
-                lcd.draw_string(lcd.width()//2-100,lcd.height()//2-4, "Error: Sensor Init Failed", lcd.WHITE, lcd.RED)
-            time.sleep(0.1)
-            continue
+sensor.set_pixformat(sensor.RGB565)
+sensor.set_framesize(sensor.QVGA) #QVGA=320x240
+sensor.set_windowing((224, 224))
+sensor.run(1)
 
-    sensor.set_pixformat(sensor.RGB565)
-    sensor.set_framesize(sensor.QVGA) #QVGA=320x240
-    sensor.set_windowing((224, 224))
-    sensor.run(1)
-
+# AI関連
 def get_feature(task):
     img = sensor.snapshot()
     img.draw_rectangle(1,46,222,132,color=(255,0,0),thickness=3)
@@ -111,6 +140,12 @@ def save(filename,feature_list):
     except:
         print("write error.")
 
+feature_file = "/sd/oshaku.csv"
+feature_list = load(feature_file)
+task = kpu.load("/sd/model/mbnet751_feature.kmodel")
+info = kpu.netinfo(task)
+
+# メニュー関連
 def disp(title, item):
     print('disp')
     lcd.clear()
@@ -146,42 +181,21 @@ def menu(title, item):
             time.sleep(0.3)
     return item[1]
 
-#
-# initialize
-#
-lcd.init()
-lcd.rotation(2)
-
-#
-# main
-#
-
-feature_file = "/sd/oshaku.csv"
-feature_list = load(feature_file)
-task = kpu.load("/sd/model/mbnet751_feature.kmodel")
-
-initialize_camera()
-
-print('[info]: Started.')
-
-info=kpu.netinfo(task)
-#a=kpu.set_layers(task,29)
-
-#clock = time.clock()
+# メイン処理
 lastTime = time.ticks_ms()
 targetAngle = 0
 currentAngle = 0
 try:
     while(True):
         now = time.ticks_ms()
-        if now - lastTime > 10:
-            print("target:" + str(targetAngle) + " current:" + str(currentAngle))
+        if now - lastTime > 2:
+            #print("target:" + str(targetAngle) + " current:" + str(currentAngle))
             lastTime = now
             if targetAngle < currentAngle:
-                currentAngle -= 1
+                currentAngle -= 5
                 setAngle(currentAngle)
             elif targetAngle > currentAngle:
-                currentAngle += 1
+                currentAngle += 5
                 setAngle(currentAngle)
 
         if but_a.value() == 0:
@@ -224,10 +238,15 @@ try:
             gc.collect()
             targetAngle = int(name)
             #print("targetAngle" + str(targetAngle))
+        else:
+            targetAngle = 0
 
         # output
         lcd.display(img)
         kpu.fmap_free(fmap)
-except:
+except Exception as e:
+    print("Exception")
+    print(e)
+    print("-------")
     kpu.deinit(task)
     sys.exit()
