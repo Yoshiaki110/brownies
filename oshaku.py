@@ -18,6 +18,7 @@ import ulab as np
 from fpioa_manager import *
 from Maix import utils, GPIO
 from machine import Timer,PWM,I2C
+import _thread
 
 utils.gc_heap_size(400000)
 
@@ -60,8 +61,7 @@ def setAngle(ang):
     pich = diff / 180
     pulse = ang * pich + PULSE_MIN
     duty = pulse / FREQ * 100
-    print("-------- ang {} ----- duty {}".format(ang, duty))
-    #print("----------------- duty" + str(duty))
+    print("-------- ang %d ----- duty %f"%(ang, duty))
     ch.duty(duty)
 setAngle(0)
 
@@ -75,7 +75,7 @@ but_b = GPIO(GPIO.GPIO2, GPIO.IN, GPIO.PULL_UP) #PULL_UP is required here!
 err_counter = 0
 while 1:
     try:
-        sensor.reset() #Reset sensor may failed, let's try some times
+        sensor.reset()
         break
     except:
         err_counter = err_counter + 1
@@ -95,7 +95,7 @@ def get_feature(task):
     img.draw_rectangle(1,46,222,132,color=(255,0,0),thickness=3)
     lcd.display(img)
     feature = kpu.forward(task,img)
-    print('get_feature')
+    #print('get_feature')
     gc.collect()
     return np.array(feature[:])
 
@@ -147,39 +147,49 @@ info = kpu.netinfo(task)
 
 # メニュー関連
 def disp(title, item):
-    print('disp')
+    #print('disp')
     lcd.clear()
     img = image.Image()
     img.draw_string(0, 0, '<<' + title + '>>', (255,0,0), scale=3)
-    lcd.display(img)
+    #lcd.display(img)
     for i in range(4):
         c = " " if i != 1 else ">"
         img.draw_string(0, i * 25 + 25, c + item[i], scale=3)
-        lcd.display(img)
+        #lcd.display(img)
+    lcd.display(img)
 
 def menu(title, item):
     gc.collect()
     time.sleep(0.3)
-    print("menu 1")
+    #print("menu 1")
     disp(title, item)
-    print("menu 2")
+    #print("menu 2")
     while(True):
         if but_a.value() == 0:
-            print(item[1])
+            #print(item[1])
             time.sleep(0.3)
             #return item[2]
-            print("menu 3")
+            #print("menu 3")
             if len(item[1]) > 0:
                 break
         if but_b.value() == 0:
-            print("menu 4")
+            #print("menu 4")
             tmp = item.pop(0)
             item.append(tmp)
-            print("menu 5")
+            #print("menu 5")
             disp(title, item)
-            print("menu 6")
+            #print("menu 6")
             time.sleep(0.3)
     return item[1]
+'''
+print("Thread -1")
+def func(name):
+    while 1:
+        print("Thread")
+        time.sleep(1)
+_thread.start_new_thread(func,("1",))
+print("Thread -2")
+'''
 
 # メイン処理
 lastTime = time.ticks_ms()
@@ -192,14 +202,14 @@ try:
             #print("target:" + str(targetAngle) + " current:" + str(currentAngle))
             lastTime = now
             if targetAngle < currentAngle:
-                currentAngle -= 5
+                currentAngle -= 3
                 setAngle(currentAngle)
             elif targetAngle > currentAngle:
-                currentAngle += 5
+                currentAngle += 3
                 setAngle(currentAngle)
 
         if but_a.value() == 0:
-            print('@@@ recording')
+            #print('@@@ recording')
             feature = get_feature(task)
             gc.collect()
             time.sleep(0.3)
@@ -210,13 +220,18 @@ try:
             gc.collect()
             # print(gc.mem_free())
             kpu.fmap_free(feature)
-            print('@@@ record finished')
+            #print('@@@ record finished')
             continue
         if but_b.value() == 0:
-            print('@@@ reset 0')
-            ret = menu("CLEAR", ["OK","Cancel","",""])
-            print('@@@ reset 1')
-            if ret == "OK":
+            #print('@@@ reset 0')
+            ret = menu(" MENU ", ["Power Off","Cancel","Clear","Default",""])
+            #print('@@@ reset 1')
+            if ret == "Power Off":
+                setAngle(0)
+                lcd.clear()
+                set_backlight(0)
+                sys.exit()
+            if ret == "Clear":
                 feature_list = []
                 save(feature_file, feature_list)
             time.sleep(0.3)
@@ -235,7 +250,7 @@ try:
             img.draw_rectangle(1,46,222,132,color=(0,255,0),thickness=3)
             img.draw_string(8, 47 +30, "%s"%(name), scale=3)
             print("[DETECTED]: on:" + name)
-            gc.collect()
+            #gc.collect()
             targetAngle = int(name)
             #print("targetAngle" + str(targetAngle))
         else:
@@ -245,8 +260,10 @@ try:
         lcd.display(img)
         kpu.fmap_free(fmap)
 except Exception as e:
-    print("Exception")
-    print(e)
-    print("-------")
+    #print('=== エラー内容 ===')
+    print('type:' + str(type(e)))
+    print('args:' + str(e.args))
+    #print('message:' + e.message)
+    print('e:' + str(e))
     kpu.deinit(task)
     sys.exit()
