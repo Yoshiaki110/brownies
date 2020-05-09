@@ -3,6 +3,16 @@ import lcd
 import image
 from fpioa_manager import *
 from Maix import I2S, GPIO
+from machine import I2C
+
+i2c = I2C(I2C.I2C0, freq=400000, scl=28, sda=29)
+def set_backlight(level):
+    if level > 8:
+        level = 8
+    if level < 0:
+        level = 0
+    val = (level+7) << 4
+    i2c.writeto_mem(0x34, 0x91,int(val))
 
 fm.register(board_info.BUTTON_A, fm.fpioa.GPIO1)
 but_a=GPIO(GPIO.GPIO1, GPIO.IN, GPIO.PULL_UP) #PULL_UP is required here!
@@ -62,6 +72,8 @@ while(True):
             print('not exec')
         elif prog[2][1] == 'poweroff':
             print('exit')
+            lcd.clear()
+            set_backlight(0)
             sys.exit()
         else:
             # exec(open("xx.py").read()) でできるかも

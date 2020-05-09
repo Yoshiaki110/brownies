@@ -95,7 +95,6 @@ def get_feature(task):
     img.draw_rectangle(1,46,222,132,color=(255,0,0),thickness=3)
     lcd.display(img)
     feature = kpu.forward(task,img)
-    #print('get_feature')
     gc.collect()
     return np.array(feature[:])
 
@@ -141,44 +140,34 @@ def save(filename,feature_list):
         print("write error.")
 
 feature_file = "/sd/oshaku.csv"
+feature_default_file = "/sd/oshaku.default.csv"
 feature_list = load(feature_file)
 task = kpu.load("/sd/model/mbnet751_feature.kmodel")
 info = kpu.netinfo(task)
 
 # メニュー関連
 def disp(title, item):
-    #print('disp')
     lcd.clear()
     img = image.Image()
     img.draw_string(0, 0, '<<' + title + '>>', (255,0,0), scale=3)
-    #lcd.display(img)
     for i in range(4):
         c = " " if i != 1 else ">"
         img.draw_string(0, i * 25 + 25, c + item[i], scale=3)
-        #lcd.display(img)
     lcd.display(img)
 
 def menu(title, item):
     gc.collect()
     time.sleep(0.3)
-    #print("menu 1")
     disp(title, item)
-    #print("menu 2")
     while(True):
         if but_a.value() == 0:
-            #print(item[1])
             time.sleep(0.3)
-            #return item[2]
-            #print("menu 3")
             if len(item[1]) > 0:
                 break
         if but_b.value() == 0:
-            #print("menu 4")
             tmp = item.pop(0)
             item.append(tmp)
-            #print("menu 5")
             disp(title, item)
-            #print("menu 6")
             time.sleep(0.3)
     return item[1]
 '''
@@ -209,7 +198,6 @@ try:
                 setAngle(currentAngle)
 
         if but_a.value() == 0:
-            #print('@@@ recording')
             feature = get_feature(task)
             gc.collect()
             time.sleep(0.3)
@@ -218,14 +206,10 @@ try:
                 feature_list.append([ret,feature])
                 save(feature_file, feature_list)
             gc.collect()
-            # print(gc.mem_free())
             kpu.fmap_free(feature)
-            #print('@@@ record finished')
             continue
         if but_b.value() == 0:
-            #print('@@@ reset 0')
             ret = menu(" MENU ", ["Power Off","Cancel","Clear","Default",""])
-            #print('@@@ reset 1')
             if ret == "Power Off":
                 setAngle(0)
                 lcd.clear()
@@ -234,6 +218,8 @@ try:
             if ret == "Clear":
                 feature_list = []
                 save(feature_file, feature_list)
+            if ret == "Default":
+                feature_list = load(feature_default_file)
             time.sleep(0.3)
             continue
 
