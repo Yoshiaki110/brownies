@@ -1,3 +1,4 @@
+import gc
 import sys
 import lcd
 import image
@@ -76,10 +77,8 @@ while(True):
             set_backlight(0)
             sys.exit()
         else:
-            # exec(open("xx.py").read()) でできるかも
-            cmd = 'import ' + prog[2][1]
-            print('exec ' + cmd)
-            exec(cmd)
+            gc.collect()
+            with open(prog[2][1]) as f: exec(f.read())
         time.sleep(0.3)
     if but == 'B':
         tmp = prog.pop(0)

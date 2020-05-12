@@ -1,10 +1,14 @@
+import gc
 import audio
 import re
 from fpioa_manager import *
 from machine import I2C
-from Maix import I2S, GPIO
+from Maix import utils, I2S, GPIO
 import sensor, image, time
 import lcd
+
+gc.collect()
+utils.gc_heap_size(400000)
 
 lcd.init()
 lcd.rotation(2)
