@@ -119,6 +119,7 @@ lcd.rotation(2)
 #
 # main
 #
+gc.collect()
 
 feature_0 = []
 feature_100 = []

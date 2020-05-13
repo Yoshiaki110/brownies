@@ -20,7 +20,9 @@ from Maix import utils, GPIO
 from machine import Timer,PWM,I2C
 import _thread
 
-utils.gc_heap_size(400000)
+#utils.gc_heap_size(250000)      # 164544 -> 168832
+#utils.gc_heap_size(300000)      # 213856 -> 218144 0
+utils.gc_heap_size(400000)      # 213856 -> 218144 0
 
 # LCD初期化
 lcd.init()
@@ -90,13 +92,32 @@ sensor.set_windowing((224, 224))
 sensor.run(1)
 
 # AI関連
-def get_feature(task):
-    img = sensor.snapshot()
-    img.draw_rectangle(1,46,222,132,color=(255,0,0),thickness=3)
-    lcd.display(img)
-    feature = kpu.forward(task,img)
+feature_list = []
+def free():
+    mem = gc.mem_free()
+    b = gc.mem_free()
     gc.collect()
-    return np.array(feature[:])
+    a = gc.mem_free()
+    print("gc %d -> %d %d" % (b, a, len(feature_list)))
+free()
+
+def get_feature(task, img):
+    print("--- 1")
+    #img = sensor.snapshot()
+    print("--- 2")
+    #img.draw_rectangle(1,46,222,132,color=(255,0,0),thickness=3)
+    print("--- 3")
+    #lcd.display(img)
+    free()
+    print("--- 4")
+    feature = kpu.forward(task,img)
+    print("--- 5")
+    free()
+    print("--- 6")
+    #return np.array(feature[:])
+    ar = np.array(feature[:])
+    print("--- 7")
+    return ar
 
 def get_nearest(feature_list, feature):
     min_dist = 10000
@@ -121,12 +142,16 @@ def load(filename):
                 vec = np.array([float(v) for v in li[1:]])
                 feature_list.append([n,vec])
                 li = f.readline()
-    except:
+    except Exception as e:
+        print('type:' + str(type(e)))
+        print('args:' + str(e.args))
+        #print('message:' + e.message)
+        print('e:' + str(e))
         print("no data.")
     return feature_list
 
 def save(filename,feature_list):
-    gc.collect()
+    free()
     output = ""
     try:
         with open(filename, 'wt') as f:
@@ -148,27 +173,34 @@ info = kpu.netinfo(task)
 # メニュー関連
 def disp(title, item):
     lcd.clear()
+    print('* 1')
     img = image.Image()
     img.draw_string(0, 0, '<<' + title + '>>', (255,0,0), scale=3)
     for i in range(4):
         c = " " if i != 1 else ">"
         img.draw_string(0, i * 25 + 25, c + item[i], scale=3)
     lcd.display(img)
+    print('* 2')
 
 def menu(title, item):
-    gc.collect()
-    time.sleep(0.3)
+    print('* 21')
+    free()
+    print('* 22')
+    #time.sleep(0.3)
+    print('* 23')
     disp(title, item)
+    print('* 24')
     while(True):
         if but_a.value() == 0:
-            time.sleep(0.3)
+            time.sleep(0.2)
             if len(item[1]) > 0:
                 break
         if but_b.value() == 0:
+            time.sleep(0.2)
             tmp = item.pop(0)
             item.append(tmp)
             disp(title, item)
-            time.sleep(0.3)
+
     return item[1]
 '''
 print("Thread -1")
@@ -186,6 +218,8 @@ targetAngle = 0
 currentAngle = 0
 try:
     while(True):
+        img = sensor.snapshot()
+
         now = time.ticks_ms()
         if now - lastTime > 2:
             #print("target:" + str(targetAngle) + " current:" + str(currentAngle))
@@ -198,32 +232,40 @@ try:
                 setAngle(currentAngle)
 
         if but_a.value() == 0:
-            feature = get_feature(task)
-            gc.collect()
-            time.sleep(0.3)
+            time.sleep(0.2)
+            print('= 1')
+            free()
+            print('= 1.5')
+            feature = get_feature(task, img)
+            free()
+            #time.sleep(0.3)
+            print('= 2')
             ret = menu(" SAVE ", ["Cancel","0","45","90","135",""])
+            print('= 3')
             if ret != "Cancel":
                 feature_list.append([ret,feature])
                 save(feature_file, feature_list)
-            gc.collect()
+            free()
+            print('= 4')
             kpu.fmap_free(feature)
+            print('= 5')
             continue
         if but_b.value() == 0:
+            time.sleep(0.2)
+            free()
             ret = menu(" MENU ", ["Power Off","Cancel","Clear","Default",""])
             if ret == "Power Off":
                 setAngle(0)
                 lcd.clear()
                 set_backlight(0)
+                kpu.deinit(task)
                 sys.exit()
             if ret == "Clear":
                 feature_list = []
                 save(feature_file, feature_list)
             if ret == "Default":
                 feature_list = load(feature_default_file)
-            time.sleep(0.3)
             continue
-
-        img = sensor.snapshot()
 
         # inference
         fmap = kpu.forward(task, img)
@@ -234,7 +276,8 @@ try:
         #print("name:" + name + " dist:" + str(dist) + " mem:" + str(gc.mem_free()))
         if dist < 200:
             img.draw_rectangle(1,46,222,132,color=(0,255,0),thickness=3)
-            img.draw_string(8, 47 +30, "%s"%(name), scale=3)
+            img.draw_string(9, 78, "%s"%(name), lcd.BLACK, scale=3)
+            img.draw_string(8, 77, "%s"%(name), lcd.WHITE, scale=3)
             print("[DETECTED]: on:" + name)
             #gc.collect()
             targetAngle = int(name)
@@ -243,13 +286,23 @@ try:
             targetAngle = 0
 
         # output
+        img.draw_string(91, 46, "Learn[A] Menu[B]", lcd.BLACK, mono_space=False, scale=2)
+        img.draw_string(90, 45, "Learn[A] Menu[B]", lcd.RED, mono_space=False, scale=2)
+        gc.collect()
+        mb = "learned[{:>2}] fmem[{:>4}]".format(len(feature_list), gc.mem_free() // 1024)
+        img.draw_string(41, 161, mb, lcd.BLACK, mono_space=False, scale=2)
+        img.draw_string(40, 160, mb, lcd.GREEN, mono_space=False, scale=2)
         lcd.display(img)
+        #lcd.display(img, roi=(10, 0, 240, 135), oft=(0, 0))
         kpu.fmap_free(fmap)
 except Exception as e:
-    #print('=== エラー内容 ===')
+    #print('======')
     print('type:' + str(type(e)))
     print('args:' + str(e.args))
     #print('message:' + e.message)
     print('e:' + str(e))
     kpu.deinit(task)
+    sys.exit()
+except KeyboardInterrupt:
+    a = kpu.deinit(task)
     sys.exit()
