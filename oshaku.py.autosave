@@ -337,7 +337,6 @@ try:
                 wizard(task)
             if ret == "Cancel":
                 play_sound("/sd/oshaku/cancel.wav")
-            print("*** 9")
             continue
 
         # inference
