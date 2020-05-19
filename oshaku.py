@@ -19,7 +19,7 @@ import ulab as np
 from fpioa_manager import *
 from Maix import utils, I2S, GPIO
 from machine import Timer,PWM,I2C
-import _thread
+#import _thread
 
 #utils.gc_heap_size(400000)      # 287
 utils.gc_heap_size(450000)      # 287
@@ -103,18 +103,12 @@ free()
 
 def get_feature(task, img):
     print("--- 1")
-    #img = sensor.snapshot()
-    print("--- 2")
-    #img.draw_rectangle(1,46,222,132,color=(255,0,0),thickness=3)
-    print("--- 3")
-    #lcd.display(img)
     free()
     print("--- 4")
     feature = kpu.forward(task,img)
     print("--- 5")
     free()
     print("--- 6")
-    #return np.array(feature[:])
     ar = np.array(feature[:])
     print("--- 7")
     return ar
@@ -177,7 +171,7 @@ wav_dev = I2S(I2S.DEVICE_0)
 def play_sound(filename):
     try:
         player = audio.Audio(path = filename)
-        player.volume(10)
+        player.volume(10)           # MAX 100
         wav_info = player.play_process(wav_dev)
         wav_dev.channel_config(wav_dev.CHANNEL_1, I2S.TRANSMITTER,resolution = I2S.RESOLUTION_16_BIT, align_mode = I2S.STANDARD_MODE)
         wav_dev.set_sample_rate(wav_info[1])
@@ -218,28 +212,48 @@ def menu(title, item):
             disp(title, item)
     return item[1]
 
-def delay(ms):
+def drawHeader(img, str):
+    img.draw_string(91, 46, str, lcd.BLACK, mono_space=False, scale=2)
+    img.draw_string(90, 45, str, lcd.RED, mono_space=False, scale=2)
+
+def drawAngle(img, str):
+    img.draw_string(9, 78, str, lcd.BLACK, scale=3)
+    img.draw_string(8, 77, str, lcd.WHITE, scale=3)
+
+def drawFooter(img, str):
+    img.draw_string(41, 161, str, lcd.BLACK, mono_space=False, scale=2)
+    img.draw_string(40, 160, str, lcd.GREEN, mono_space=False, scale=2)
+
+def delay(ms, ang):
     st = time.ticks_ms()
     while(True):
-        i = sensor.snapshot()
+        img = sensor.snapshot()
+        drawHeader(img, "Point the camera")
+        drawAngle(img, ang)
+        drawFooter(img, "Set to " + ang + " degrees")
+        lcd.display(img)
         now = time.ticks_ms()
         if now - st > ms:
             break
-        lcd.display(i)
 
 def wizard(task):
-    #play_sound("/sd/oshaku/start_learn.wav")
+    delay(1, '0')
+    play_sound("/sd/oshaku/start_learn.wav")
     free()
-    delay(1500)
+    delay(1500, '0')
     for ang in ["0","45","90","135"]:
         play_sound("/sd/oshaku/" + str(ang) + ".wav")
         play_sound("/sd/oshaku/satuei.wav")
-        delay(1000)
+        delay(1000, ang)
         for i in ["3","2","1"]:
             play_sound("/sd/oshaku/" + str(i) + ".wav")
-            delay(700)
+            delay(700, ang)
         play_sound("/sd/oshaku/kacha.wav")
         img = sensor.snapshot()
+        #drawAngle(img, ang)
+        drawHeader(img, "Point the camera")
+        drawAngle(img, ang)
+        drawFooter(img, "Saved " + ang + " degrees")
         lcd.display(img)
         feature = get_feature(task, img)
         free()
@@ -270,7 +284,6 @@ try:
 
         now = time.ticks_ms()
         if now - lastTime > 2:
-            #print("target:" + str(targetAngle) + " current:" + str(currentAngle))
             lastTime = now
             if targetAngle < currentAngle:
                 currentAngle -= 3
@@ -291,7 +304,6 @@ try:
             print('= 1.5')
             feature = get_feature(task, img)
             free()
-            #time.sleep(0.3)
             print('= 2')
             play_sound("/sd/oshaku/kakudo.wav")
             ret = menu(" SAVE ", ["Cancel","0","45","90","135",""])
@@ -332,12 +344,10 @@ try:
                 play_sound("/sd/oshaku/default.wav")
                 feature_list = load(feature_default_file)
             if ret == "Auto Set":
-                play_sound("/sd/oshaku/start_learn.wav")
                 print("*** 5")
                 wizard(task)
             if ret == "Cancel":
                 play_sound("/sd/oshaku/cancel.wav")
-            print("*** 9")
             continue
 
         # inference
@@ -346,28 +356,21 @@ try:
 
         # get nearest target
         name,dist,_ = get_nearest(feature_list, p)
-        #print("name:" + name + " dist:" + str(dist) + " mem:" + str(gc.mem_free()))
         if dist < 200:
             img.draw_rectangle(1,46,222,132,color=(0,255,0),thickness=3)
-            img.draw_string(9, 78, "%s"%(name), lcd.BLACK, scale=3)
-            img.draw_string(8, 77, "%s"%(name), lcd.WHITE, scale=3)
+            drawAngle(img, name)
             print("[DETECTED]: on:" + name)
-            #gc.collect()
             targetAngle = int(name)
-            #print("targetAngle" + str(targetAngle))
         else:
             targetAngle = 0
 
         # output
-        img.draw_string(91, 46, "Learn[A] Menu[B]", lcd.BLACK, mono_space=False, scale=2)
-        img.draw_string(90, 45, "Learn[A] Menu[B]", lcd.RED, mono_space=False, scale=2)
+        drawHeader(img, "Learn[A] Menu[B]")
         gc.collect()
         mb = "learned[{:>2}] fmem[{:>4}]".format(len(feature_list), gc.mem_free() // 1024)
         print(mb)
-        img.draw_string(41, 161, mb, lcd.BLACK, mono_space=False, scale=2)
-        img.draw_string(40, 160, mb, lcd.GREEN, mono_space=False, scale=2)
+        drawFooter(img, mb)
         lcd.display(img)
-        #lcd.display(img, roi=(10, 0, 240, 135), oft=(0, 0))
         kpu.fmap_free(fmap)
 except Exception as e:
     #print('======')
