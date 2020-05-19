@@ -13,16 +13,16 @@ import lcd
 import image
 import time
 import uos
+import audio
 import gc
 import ulab as np
 from fpioa_manager import *
-from Maix import utils, GPIO
+from Maix import utils, I2S, GPIO
 from machine import Timer,PWM,I2C
 import _thread
 
-#utils.gc_heap_size(250000)      # 164544 -> 168832
-#utils.gc_heap_size(300000)      # 213856 -> 218144 0
-utils.gc_heap_size(400000)      # 213856 -> 218144 0
+#utils.gc_heap_size(400000)      # 287
+utils.gc_heap_size(450000)      # 287
 
 # LCD初期化
 lcd.init()
@@ -38,7 +38,7 @@ def set_backlight(level):
     i2c.writeto_mem(0x34, 0x91,int(val))
 
 try:
-    img = image.Image("/sd/enkaku.jpg")
+    img = image.Image("/sd/oshaku/enkaku.jpg")
     set_backlight(0)
     lcd.display(img)
     for i in range(9):
@@ -61,7 +61,7 @@ arg = {-90:2.5, 0:7.25, 90:12}	# arg:duty
 def setAngle(ang):
     diff = PULSE_MAX - PULSE_MIN
     pich = diff / 180
-    pulse = ang * pich + PULSE_MIN
+    pulse = (ang+45) * pich + PULSE_MIN
     duty = pulse / FREQ * 100
     print("-------- ang %d ----- duty %f"%(ang, duty))
     ch.duty(duty)
@@ -143,11 +143,7 @@ def load(filename):
                 feature_list.append([n,vec])
                 li = f.readline()
     except Exception as e:
-        print('type:' + str(type(e)))
-        print('args:' + str(e.args))
-        #print('message:' + e.message)
-        print('e:' + str(e))
-        print("no data.")
+        print('load err:' + str(e))
     return feature_list
 
 def save(filename,feature_list):
@@ -161,14 +157,40 @@ def save(filename,feature_list):
                     vec_str=",{0:.5f}".format(v)
                     f.write(vec_str)
                 f.write('\n')
-    except:
-        print("write error.")
+    except Exception as e:
+        print('write err:' + str(e))
 
 feature_file = "/sd/oshaku.csv"
 feature_default_file = "/sd/oshaku.default.csv"
 feature_list = load(feature_file)
-task = kpu.load("/sd/model/mbnet751_feature.kmodel")
+task = kpu.load("/sd/oshaku/mbnet751_feature.kmodel")
 info = kpu.netinfo(task)
+
+# 音声関連
+fm.register(board_info.SPK_SD, fm.fpioa.GPIO0)
+spk_sd=GPIO(GPIO.GPIO0, GPIO.OUT)
+spk_sd.value(1) #Enable the SPK output
+fm.register(board_info.SPK_DIN,fm.fpioa.I2S0_OUT_D1)
+fm.register(board_info.SPK_BCLK,fm.fpioa.I2S0_SCLK)
+fm.register(board_info.SPK_LRCLK,fm.fpioa.I2S0_WS)
+wav_dev = I2S(I2S.DEVICE_0)
+def play_sound(filename):
+    try:
+        player = audio.Audio(path = filename)
+        player.volume(10)
+        wav_info = player.play_process(wav_dev)
+        wav_dev.channel_config(wav_dev.CHANNEL_1, I2S.TRANSMITTER,resolution = I2S.RESOLUTION_16_BIT, align_mode = I2S.STANDARD_MODE)
+        wav_dev.set_sample_rate(wav_info[1])
+        while True:
+            ret = player.play()
+            if ret == None:
+                break
+            elif ret==0:
+                break
+        player.finish()
+        time.sleep(0.1)
+    except Exception as e:
+        print('sound err:' + str(e))
 
 # メニュー関連
 def disp(title, item):
@@ -192,16 +214,47 @@ def menu(title, item):
     print('* 24')
     while(True):
         if but_a.value() == 0:
-            time.sleep(0.2)
+            time.sleep(0.3)
             if len(item[1]) > 0:
                 break
         if but_b.value() == 0:
-            time.sleep(0.2)
+            time.sleep(0.3)
             tmp = item.pop(0)
             item.append(tmp)
             disp(title, item)
-
     return item[1]
+
+def delay(ms):
+    st = time.ticks_ms()
+    while(True):
+        i = sensor.snapshot()
+        now = time.ticks_ms()
+        if now - st > ms:
+            break
+        lcd.display(i)
+
+def wizard(task):
+    play_sound("/sd/oshaku/start_learn.wav")
+    free()
+    delay(1500)
+    for ang in ["0","45","90","135"]:
+        play_sound("/sd/oshaku/" + str(ang) + ".wav")
+        play_sound("/sd/oshaku/satuei.wav")
+        delay(1000)
+        for i in ["3","2","1"]:
+            play_sound("/sd/oshaku/" + str(i) + ".wav")
+            delay(700)
+        play_sound("/sd/oshaku/kacha.wav")
+        img = sensor.snapshot()
+        lcd.display(img)
+        feature = get_feature(task, img)
+        free()
+        feature_list.append([ang,feature])
+        save(feature_file, feature_list)
+        free()
+    kpu.fmap_free(feature)
+
+
 '''
 print("Thread -1")
 def func(name):
@@ -232,9 +285,14 @@ try:
                 setAngle(currentAngle)
 
         if but_a.value() == 0:
-            time.sleep(0.2)
+            time.sleep(0.3)
             print('= 1')
             free()
+            print('= 1.1')
+            play_sound("/sd/oshaku/kacha.wav")
+            print('= 1.2')
+            free()
+            time.sleep(0.5)
             print('= 1.5')
             feature = get_feature(task, img)
             free()
@@ -251,9 +309,14 @@ try:
             print('= 5')
             continue
         if but_b.value() == 0:
-            time.sleep(0.2)
+            time.sleep(0.3)
+            print("*** 1")
             free()
-            ret = menu(" MENU ", ["Power Off","Cancel","Clear","Default",""])
+            print("*** 2")
+            ret = menu(" MENU ", ["Power Off","Cancel","Auto Set","Clear","Default",""])
+            print("*** " + ret)
+            free()
+            print("*** 3")
             if ret == "Power Off":
                 setAngle(0)
                 lcd.clear()
@@ -265,6 +328,10 @@ try:
                 save(feature_file, feature_list)
             if ret == "Default":
                 feature_list = load(feature_default_file)
+            if ret == "Auto Set":
+                print("*** 5")
+                wizard(task)
+            print("*** 9")
             continue
 
         # inference
@@ -290,6 +357,7 @@ try:
         img.draw_string(90, 45, "Learn[A] Menu[B]", lcd.RED, mono_space=False, scale=2)
         gc.collect()
         mb = "learned[{:>2}] fmem[{:>4}]".format(len(feature_list), gc.mem_free() // 1024)
+        print(mb)
         img.draw_string(41, 161, mb, lcd.BLACK, mono_space=False, scale=2)
         img.draw_string(40, 160, mb, lcd.GREEN, mono_space=False, scale=2)
         lcd.display(img)

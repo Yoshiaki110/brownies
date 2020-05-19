@@ -81,16 +81,29 @@ def shutter():
     lcd.display(img)
     time.sleep(3)
 
+def delay(ms):
+    print('===> 1  ' + str(ms))
+    st = time.ticks_ms()
+    while(True):
+        i = sensor.snapshot()
+        now = time.ticks_ms()
+        if now - st > ms:
+            break
+        lcd.display(i)
+
 def selftimer():
     print("selftimer 3")
     play_sound("/sd/voice/3s.wav")
-    time.sleep(1)
+    #time.sleep(1)
+    delay(1000)
     print("selftimer 2")
     play_sound("/sd/voice/2s.wav")
-    time.sleep(1)
+    #time.sleep(1)
+    delay(1000)
     print("selftimer 1")
     play_sound("/sd/voice/1s.wav")
-    time.sleep(1)
+    #time.sleep(1)
+    delay(1000)
     shutter()
 
 while(True):
