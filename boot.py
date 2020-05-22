@@ -25,6 +25,30 @@ but_b = GPIO(GPIO.GPIO2, GPIO.IN, GPIO.PULL_UP) #PULL_UP is required here!
 #fm.register(board_info.BUTTON_C, fm.fpioa.GPIO2)
 #but_b = GPIO(GPIO.GPIO2, GPIO.IN, GPIO.PULL_UP) #PULL_UP is required here!
 
+# ボリュームファイル、このファイルがあるとボリューム小で動作するようにする
+VOLFILE = "/sd/VOLLOW"
+def vol_check():
+    try:
+        os.stat(VOLFILE)
+        print('stat ok')
+    except Exception as e:
+        print('stat err:' + str(e))
+
+def vol_high():
+    try:
+        os.remove(VOLFILE)
+        print('remove ok')
+    except Exception as e:
+        print('remove err:' + str(e))
+
+def vol_low():
+    try:
+        with open(VOLFILE, 'wt') as f:
+            f.write(VOLFILE)
+        print('write ok')
+    except Exception as e:
+        print('write err:' + str(e))
+
 def check_but():
     if but_a.value() == 0:
         print('[info]: Button A pushed')
@@ -48,6 +72,9 @@ prog = [("brownie","brownie20.py"),
         ("video_r","video_r.py"),       # 動画撮影
         ("video_p","video_p.py"),       # 動画再生
         ("poweroff","poweroff"),
+        ("vol_high","vol_high"),
+        ("vol_low","vol_low"),
+        ("vol_check","vol_check"),
         ("-","")]
 
 lcd.init()
@@ -76,6 +103,12 @@ while(True):
             lcd.clear()
             set_backlight(0)
             sys.exit()
+        elif prog[2][1] == 'vol_high':
+            vol_high()
+        elif prog[2][1] == 'vol_low':
+            vol_low()
+        elif prog[2][1] == 'vol_check':
+            vol_check()
         else:
             gc.collect()
             with open(prog[2][1]) as f: exec(f.read())

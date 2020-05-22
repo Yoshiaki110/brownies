@@ -161,6 +161,14 @@ task = kpu.load("/sd/oshaku/mbnet751_feature.kmodel")
 info = kpu.netinfo(task)
 
 # 音声関連
+# ボリュームファイル、このファイルがあるとボリューム小で動作するようにする
+VOLFILE = "/sd/VOLLOW"
+vol = 10
+try:
+    os.stat(VOLFILE)
+except Exception as e:
+    vol = 100           # ファイルがないので最大音量
+print("vol:" + str(vol))
 fm.register(board_info.SPK_SD, fm.fpioa.GPIO0)
 spk_sd=GPIO(GPIO.GPIO0, GPIO.OUT)
 spk_sd.value(1) #Enable the SPK output
@@ -171,7 +179,7 @@ wav_dev = I2S(I2S.DEVICE_0)
 def play_sound(filename):
     try:
         player = audio.Audio(path = filename)
-        player.volume(10)           # MAX 100
+        player.volume(vol)           # MAX 100
         wav_info = player.play_process(wav_dev)
         wav_dev.channel_config(wav_dev.CHANNEL_1, I2S.TRANSMITTER,resolution = I2S.RESOLUTION_16_BIT, align_mode = I2S.STANDARD_MODE)
         wav_dev.set_sample_rate(wav_info[1])
@@ -250,15 +258,14 @@ def wizard(task):
             delay(700, ang)
         play_sound("/sd/oshaku/kacha.wav")
         img = sensor.snapshot()
-        #drawAngle(img, ang)
-        drawHeader(img, "Point the camera")
-        drawAngle(img, ang)
-        drawFooter(img, "Saved " + ang + " degrees")
-        lcd.display(img)
         feature = get_feature(task, img)
         free()
         feature_list.append([ang,feature])
         save(feature_file, feature_list)
+        drawHeader(img, "Point the camera")
+        drawAngle(img, ang)
+        drawFooter(img, "Saved " + ang + " degrees")
+        lcd.display(img)
         free()
         play_sound("/sd/oshaku/set.wav")
     kpu.fmap_free(feature)
