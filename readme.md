@@ -88,3 +88,12 @@ http://cloud.ai-j.jp/hackathon/index.php
 
 with open("hello.py") as f:
     exec(f.read())
+
+
+---------------------------
+#MaixHub Online CompileでMaixPyをカスタマイズする
+https://qiita.com/nnn112358/items/1575206bda278235774f
+
+https://www.maixhub.com/compile.html
+
+MaixPy IDE Support 以外をOFFで構わない？

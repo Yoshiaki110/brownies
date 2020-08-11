@@ -99,6 +99,7 @@ def free():
     gc.collect()
     a = gc.mem_free()
     print("gc %d -> %d %d" % (b, a, len(feature_list)))
+    print(kpu.memtest())
 free()
 
 def get_feature(task, img):
@@ -249,9 +250,8 @@ def wizard(task):
     play_sound("/sd/oshaku/start_learn.wav")
     free()
     delay(1500, '0')
-    for ang in ["0","45","90","135"]:
+    for ang in ["0","45","90","135","non"]:
         play_sound("/sd/oshaku/" + str(ang) + ".wav")
-        play_sound("/sd/oshaku/satuei.wav")
         delay(1000, ang)
         for i in ["3","2","1"]:
             play_sound("/sd/oshaku/" + str(i) + ".wav")
@@ -367,7 +367,7 @@ try:
             img.draw_rectangle(1,46,222,132,color=(0,255,0),thickness=3)
             drawAngle(img, name)
             print("[DETECTED]: on:" + name)
-            targetAngle = int(name)
+            targetAngle = 0 if name == "non" else int(name)
         else:
             targetAngle = 0
 
@@ -375,7 +375,7 @@ try:
         drawHeader(img, "Learn[A] Menu[B]")
         gc.collect()
         mb = "learned[{:>2}] fmem[{:>4}]".format(len(feature_list), gc.mem_free() // 1024)
-        print(mb)
+        #print(mb)
         drawFooter(img, mb)
         lcd.display(img)
         kpu.fmap_free(fmap)
