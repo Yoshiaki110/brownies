@@ -49,6 +49,15 @@ except Exception as e:
     print(e)
 
 # サーボ関連
+
+# REVファイル、このファイルがあるとボリューム小で動作するようにする
+REVFILE = "/sd/REV"
+REV = True
+try:
+    os.stat(REVFILE)
+except Exception as e:
+    vol = False           # ファイルがないので正回転
+
 # FREQ は 50じゃない
 FREQ = 20
 PULSE_MIN = 0.6
@@ -59,6 +68,8 @@ ch = PWM(tim, freq=50, duty=2.5, pin=35)
 arg = {-90:2.5, 0:7.25, 90:12}	# arg:duty
 
 def setAngle(ang):
+    if REV:
+        ang = 180 - ang
     diff = PULSE_MAX - PULSE_MIN
     pich = diff / 180
     pulse = (ang+45) * pich + PULSE_MIN
@@ -353,6 +364,16 @@ try:
             if ret == "Auto Set":
                 print("*** 5")
                 wizard(task)
+            if ret == "Servo FWD":
+                REV = False
+                os.remove(REVFILE)
+            if ret == "Servo REV":
+                REV = Trur
+                try:
+                    with open(REVFILE, 'wt') as f:
+                        f.write('REV')
+                except Exception as e:
+                    pass
             if ret == "Cancel":
                 play_sound("/sd/oshaku/cancel.wav")
             continue
