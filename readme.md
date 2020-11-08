@@ -97,3 +97,87 @@ https://qiita.com/nnn112358/items/1575206bda278235774f
 https://www.maixhub.com/compile.html
 
 MaixPy IDE Support à»äOÇOFFÇ≈ç\ÇÌÇ»Ç¢ÅH
+
+v	IDE
+	FreeRTOS
+	_thread
+	nes
+	video
+	minimum OMV
+	YUV convert table
+	dual sensor buff
+	MIC_ARRAY
+	LVGL
+	lodepng
+v	ulab
+	kmodel v4
+	touchscreen
+	ws2812
+	HTPA thermal drive
+	rhtpa
+_maixpy_custom_v0.5.0-89-ge893fb4c1_33769.bin
+board_info.BUTTON_AÇ™Ç»Ç¢
+
+
+v	IDE
+v	FreeRTOS
+v	_thread
+	nes
+v	video
+	minimum OMV
+	YUV convert table
+	dual sensor buff
+	MIC_ARRAY
+	LVGL
+	lodepng
+v	ulab
+	kmodel v4
+	touchscreen
+v	ws2812
+	HTPA thermal drive
+	rhtpa
+_maixpy_custom_v0.5.0-89-ge893fb4c1_76694.bin
+board_info.BUTTON_AÇ™Ç»Ç¢
+
+
+v	IDE
+	FreeRTOS
+	_thread
+	nes
+v	video
+v	minimum OMV
+	YUV convert table
+	dual sensor buff
+	MIC_ARRAY
+v	LVGL
+	lodepng
+v	ulab
+	kmodel v4
+	touchscreen
+v	ws2812
+	HTPA thermal drive
+	rhtpa
+_maixpy_custom_v0.5.0-89-ge893fb4c1_98982.bin
+board_info.BUTTON_AÇ™Ç»Ç¢
+
+
+master default with lvgl support
+v	IDE
+v	FreeRTOS
+v	_thread
+v	nes
+v	video
+	minimum OMV
+	YUV convert table
+	dual sensor buff
+v	MIC_ARRAY
+v	LVGL
+v	lodepng
+v	ulab
+v	kmodel v4
+v	touchscreen
+v	ws2812
+	HTPA thermal drive
+	rhtpa
+_maixpy_custom_v0.5.0-89-ge893fb4c1_41922.bin
+board_info.BUTTON_AÇ™Ç»Ç¢

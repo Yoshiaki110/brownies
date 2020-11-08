@@ -60,21 +60,24 @@ except Exception as e:
 
 # FREQ は 50じゃない
 FREQ = 20
-PULSE_MIN = 0.6
-PULSE_MAX = 2.3
+PICH = (2.3 - 0.4) / 180
+PICH_OFS = 1.0
+PICH_OFS_REV = 0.57
 
 tim = Timer(Timer.TIMER0, Timer.CHANNEL0, mode=Timer.MODE_PWM)
 ch = PWM(tim, freq=50, duty=2.5, pin=35)
 arg = {-90:2.5, 0:7.25, 90:12}	# arg:duty
 
-def setAngle(ang):
+def setAngle(angle):
     if REV:
-        ang = 180 - ang
-    diff = PULSE_MAX - PULSE_MIN
-    pich = diff / 180
-    pulse = (ang+45) * pich + PULSE_MIN
+        ang = 180 - angle
+        pich_ofs = PICH_OFS_REV
+    else:
+        ang = angle
+        pich_ofs = PICH_OFS
+    pulse = ang * PICH + pich_ofs
     duty = pulse / FREQ * 100
-    print("-------- ang %d ----- duty %f"%(ang, duty))
+    print("- %d ---- angle %d --- ang %d ----- duty %f   ofs %f"%(REV, angle, ang, duty, PICH_OFS))
     ch.duty(duty)
 setAngle(0)
 
@@ -166,8 +169,8 @@ def save(filename,feature_list):
     except Exception as e:
         print('write err:' + str(e))
 
-feature_file = "/sd/oshaku.csv"
-feature_default_file = "/sd/oshaku.default.csv"
+feature_file = "/sd/oshaku/oshaku.csv"
+feature_default_file = "/sd/oshaku/oshaku.default.csv"
 feature_list = load(feature_file)
 task = kpu.load("/sd/oshaku/mbnet751_feature.kmodel")
 info = kpu.netinfo(task)
@@ -324,7 +327,7 @@ try:
             free()
             print('= 2')
             play_sound("/sd/oshaku/kakudo.wav")
-            ret = menu(" SAVE ", ["Cancel","0","45","90","135",""])
+            ret = menu(" SAVE ", ["Cancel","0","45","90","135","non",""])
             print('= 3')
             if ret != "Cancel":
                 play_sound("/sd/oshaku/set.wav")
@@ -343,7 +346,7 @@ try:
             print("*** 1")
             free()
             print("*** 2")
-            ret = menu(" MENU ", ["Power Off","Cancel","Auto Set","Clear","Default",""])
+            ret = menu(" MENU ", ["Power Off","Cancel","Auto Set","Clear","Default","Servo FWD","Servo REV",""])
             print("*** " + ret)
             free()
             print("*** 3")
@@ -367,13 +370,15 @@ try:
             if ret == "Servo FWD":
                 REV = False
                 os.remove(REVFILE)
+                print("Servo FWD:" + str(REV))
             if ret == "Servo REV":
-                REV = Trur
+                REV = True
                 try:
                     with open(REVFILE, 'wt') as f:
                         f.write('REV')
                 except Exception as e:
                     pass
+                print("Servo REV:" + str(REV))
             if ret == "Cancel":
                 play_sound("/sd/oshaku/cancel.wav")
             continue
