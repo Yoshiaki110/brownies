@@ -15,61 +15,61 @@ http://dl.sipeed.com/MAIX/MaixPy/release/master/maixpy_v0.5.0_9_g8eba07d
 * QR code 'reset.png' is a special code to reset your model.
 
 -------------------
-ƒGƒfƒBƒ^‚Ì‘€ì‚Í
+ã‚¨ãƒ‡ã‚£ã‚¿ã®æ“ä½œã¯
 http://ssj.siosalt.tokyo/?cat=21
-‚Ü‚½‚Í
+ã¾ãŸã¯
 https://scrapbox.io/saitotetsuya/M5StickV
 
 M5StickV MicroPython Instructions
 https://qiita.com/Lathe/items/7fbfccafb879de4bf11e
 
-M5StickV‚ğ‚³‚í‚Á‚Ä‚İ‚éƒƒ‚.md
+M5StickVã‚’ã•ã‚ã£ã¦ã¿ã‚‹ãƒ¡ãƒ¢.md
 https://gist.github.com/yoggy/86c979fbbae7c3de00c0e6b5c9787475
 
 MaixPy Documentation
 https://maixpy.sipeed.com/en/
 
-MicroPython ƒhƒLƒ…ƒƒ“ƒe[ƒVƒ‡ƒ“
+MicroPython ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³
 https://micropython-docs-ja.readthedocs.io/ja/latest/index.html
 
-yM5STICKVzPWM‚ÅƒT[ƒ{ƒ‚[ƒ^‚ğ“®‚©‚·
-y‰ğàzM5STICKV‚ÌPYTHONƒvƒƒOƒ‰ƒ~ƒ“ƒO@`‰t»•Ò`‚“
+ã€M5STICKVã€‘PWMã§ã‚µãƒ¼ãƒœãƒ¢ãƒ¼ã‚¿ã‚’å‹•ã‹ã™
+ã€è§£èª¬ã€‘M5STICKVã®PYTHONãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°ã€€ï½æ¶²æ™¶ç·¨ï½ï½“
 https://hellobreak.net/
 
-M5StickV‚ÌGroveƒRƒlƒNƒ^‚ğg‚¤ - ƒuƒU[‚ğ–Â‚ç‚·
+M5StickVã®Groveã‚³ãƒã‚¯ã‚¿ã‚’ä½¿ã† - ãƒ–ã‚¶ãƒ¼ã‚’é³´ã‚‰ã™
 https://hrkz.tokyo/m5stickv-grove/
 
 Seeed-Studio / grove.py
 https://github.com/Seeed-Studio/grove.py/tree/master/doc
 
-MaixPy(MicroPython)‚ÅBlink‚·‚é
+MaixPy(MicroPython)ã§Blinkã™ã‚‹
 https://beta-notes.way-nifty.com/blog/2020/01/post-531c9b.html
 
-Grove’[q‚ğ—˜—p‚·‚é - UART
+Groveç«¯å­ã‚’åˆ©ç”¨ã™ã‚‹ - UART
 https://riscv.love/024
 
 
 
 
-AI+IoT‚ÈƒfƒoƒCƒX‚ğ‚¨èŒy‚Éì‚ê‚éM5StickV‚ÆSORACOM LTE-M Button Plus
-(ƒm[ƒgƒuƒbƒN‚Å“]ˆÚŠwK)
+AI+IoTãªãƒ‡ãƒã‚¤ã‚¹ã‚’ãŠæ‰‹è»½ã«ä½œã‚Œã‚‹M5StickVã¨SORACOM LTE-M Button Plus
+(ãƒãƒ¼ãƒˆãƒ–ãƒƒã‚¯ã§è»¢ç§»å­¦ç¿’)
 http://masato-ka.hatenablog.com/entry/2019/09/04/002317
 
 
-M5StickV‚âUnitV‚Åg‚¦‚ékmodelƒtƒ@ƒCƒ‹‚ğƒ[ƒJƒ‹ŠÂ‹«‚Åì¬‚·‚éB
+M5StickVã‚„UnitVã§ä½¿ãˆã‚‹kmodelãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ­ãƒ¼ã‚«ãƒ«ç’°å¢ƒã§ä½œæˆã™ã‚‹ã€‚
 https://raspberrypi.mongonta.com/howto-make-kmodel-on-ubuntu/
-•¡”‚ÌƒIƒuƒWƒFƒNƒg‚ğ”F¯‚Å‚«‚ékmodelƒtƒ@ƒCƒ‹‚ğì¬‚·‚é
+è¤‡æ•°ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’èªè­˜ã§ãã‚‹kmodelãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã™ã‚‹
 https://raspberrypi.mongonta.com/howto-make-kmodel-of-multiple-object/
 
 
-ƒTƒ“ƒvƒ‹
+ã‚µãƒ³ãƒ—ãƒ«
 https://github.com/mongonta0716/m5stickv-tips
 
 https://gist.github.com/ksasao
 https://github.com/anoken/purin_wo_motto_mimamoru_gijutsu
 
 -------------------
-‚p‚q
+ï¼±ï¼²
 https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=ichi
 https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=ni
 https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=san
@@ -78,25 +78,25 @@ https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=go
 
 
 
-‰¹º
+éŸ³å£°
 http://open-jtalk.sp.nitech.ac.jp/
 http://cloud.ai-j.jp/hackathon/index.php
 
 
 -------------
-ƒvƒƒOƒ‰ƒ€Às‚ÍAimport ‚Å‚È‚­‰º‹L‚Ì‚Ù‚¤‚ª‚¢‚¢
+ãƒ—ãƒ­ã‚°ãƒ©ãƒ å®Ÿè¡Œã¯ã€import ã§ãªãä¸‹è¨˜ã®ã»ã†ãŒã„ã„
 
 with open("hello.py") as f:
     exec(f.read())
 
 
 ---------------------------
-#MaixHub Online Compile‚ÅMaixPy‚ğƒJƒXƒ^ƒ}ƒCƒY‚·‚é
+#MaixHub Online Compileã§MaixPyã‚’ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºã™ã‚‹
 https://qiita.com/nnn112358/items/1575206bda278235774f
 
 https://www.maixhub.com/compile.html
 
-MaixPy IDE Support ˆÈŠO‚ğOFF‚Å\‚í‚È‚¢H
+MaixPy IDE Support ä»¥å¤–ã‚’OFFã§æ§‹ã‚ãªã„ï¼Ÿ
 
 v	IDE
 	FreeRTOS
@@ -116,7 +116,7 @@ v	ulab
 	HTPA thermal drive
 	rhtpa
 _maixpy_custom_v0.5.0-89-ge893fb4c1_33769.bin
-board_info.BUTTON_A‚ª‚È‚¢
+board_info.BUTTON_AãŒãªã„
 
 
 v	IDE
@@ -137,7 +137,7 @@ v	ws2812
 	HTPA thermal drive
 	rhtpa
 _maixpy_custom_v0.5.0-89-ge893fb4c1_76694.bin
-board_info.BUTTON_A‚ª‚È‚¢
+board_info.BUTTON_AãŒãªã„
 
 
 v	IDE
@@ -158,7 +158,7 @@ v	ws2812
 	HTPA thermal drive
 	rhtpa
 _maixpy_custom_v0.5.0-89-ge893fb4c1_98982.bin
-board_info.BUTTON_A‚ª‚È‚¢
+board_info.BUTTON_AãŒãªã„
 
 
 master default with lvgl support
@@ -180,4 +180,9 @@ v	ws2812
 	HTPA thermal drive
 	rhtpa
 _maixpy_custom_v0.5.0-89-ge893fb4c1_41922.bin
-board_info.BUTTON_A‚ª‚È‚¢
+board_info.BUTTON_AãŒãªã„
+
+----
+
+ä»¥ä¸‹ã§WSLä½¿ã£ã¦ãƒ“ãƒ«ãƒ‰ã¯ã§ããŸã€å®Ÿæ©Ÿã§ã®å‹•ä½œæœªæ¤œè¨¼ã€‚
+https://raspberrypi.mongonta.com/howto-build-firmware-of-m5stickv/
