@@ -186,3 +186,6 @@ board_info.BUTTON_Aがない
 
 以下でWSL使ってビルドはできた、実機での動作未検証。
 https://raspberrypi.mongonta.com/howto-build-firmware-of-m5stickv/
+git checkout refs/tags/v0.5.0
+git submodule update --init --recursive
+
