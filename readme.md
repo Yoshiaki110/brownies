@@ -189,3 +189,18 @@ https://raspberrypi.mongonta.com/howto-build-firmware-of-m5stickv/
 git checkout refs/tags/v0.5.0
 git submodule update --init --recursive
 
+---------
+M5StickVやUnitVで使えるkmodelファイルをローカル環境で作成する。
+https://raspberrypi.mongonta.com/howto-make-kmodel-on-ubuntu/
+
+リブートは「wsl --shutdown」
+
+condaのインストール後「source ~/.bashrc」を行う
+
+学習前に「pip install 'h5py<3.0.0'」を実行
+
+
+notebookのインストール
+conda install jupyter
+jupyter notebook --no-browser --port=8080 --ip=0.0.0.0
+（多分動かない）
