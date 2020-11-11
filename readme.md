@@ -204,3 +204,37 @@ notebookのインストール
 conda install jupyter
 jupyter notebook --no-browser --port=8080 --ip=0.0.0.0
 （多分動かない）
+
+------------
+
+下記でnotebook環境でできた（Grad-CAM関連はダメ）
+https://colab.research.google.com/drive/1pjtPhnMyn-T2gfu1Qw_GtMFj44555nhM#scrollTo=86Y5ihRDB5v9
+
+
+conda create -n "jupyter" python=3.7
+conda activate jupyter
+
+conda install jupyter
+conda install tensorflow
+conda install keras
+
+conda install Pillow
+conda install matplotlib
+conda install scikit-learn
+conda install pytz
+conda install seaborn
+
+jupyter notebook --no-browser --port=8080 --ip=0.0.0.0
+
+
+/content/transfer_learning_sipeed
+/home/ito/jupyter/transfer_learning_sipeed
+----------------
+wslのアンストールしてつくりなおす（C:\を使わないように下記参照）
+https://phst.hateblo.jp/entry/2020/01/18/000000
+
+その前にインストールしてあるWSLを削除
+https://www.atmarkit.co.jp/ait/articles/1807/06/news028.html
+下記が消えているか確認
+C:\Users\yoshi\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu18.04onWindows_79rhkp1fndgsc
+
