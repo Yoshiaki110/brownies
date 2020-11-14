@@ -210,7 +210,8 @@ jupyter notebook --no-browser --port=8080 --ip=0.0.0.0
 下記でnotebook環境でできた（Grad-CAM関連はダメ）
 https://colab.research.google.com/drive/1pjtPhnMyn-T2gfu1Qw_GtMFj44555nhM#scrollTo=86Y5ihRDB5v9
 
-
+mkdir jupyter
+cd jupyter
 conda create -n "jupyter" python=3.7
 conda activate jupyter
 
