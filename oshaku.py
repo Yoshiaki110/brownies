@@ -35,7 +35,7 @@ def set_backlight(level):
     if level < 0:
         level = 0
     val = (level+7) << 4
-    i2c.writeto_mem(0x34, 0x91,int(val))
+    i2c.writeto_mem(0x34, 0x91, int(val))
 
 try:
     img = image.Image("/sd/oshaku/enkaku.jpg")
@@ -49,35 +49,50 @@ except Exception as e:
     print(e)
 
 # サーボ関連
+SERVO_FNAME = "/sd/oshaku/servo.csv"
 
-# REVファイル、このファイルがあるとボリューム小で動作するようにする
-REVFILE = "/sd/REV"
-REV = True
-try:
-    os.stat(REVFILE)
-except Exception as e:
-    vol = False           # ファイルがないので正回転
+def load_servo():
+    fwd = True
+    ofs = 0.5
+    try:
+        with open(SERVO_FNAME, 'rt') as f:
+            col = f.readline().strip().split(',')
+        if col[0].lower() in ["true", "t", "yes", "1"]:
+            fwd = True
+        else:
+            fwd = False
+        ofs = float(col[1])
+        print('load_servo fwd:' + str(fwd) + ' ofs:' + str(ofs))
+    except Exception as e:
+        print('load_servo err:' + str(e))
+    return fwd, ofs
 
+def save_servo(fwd, ofs):
+    try:
+        with open(SERVO_FNAME, 'wt') as f:
+            f.write(str(fwd))
+            f.write(',')
+            f.write(str(ofs))
+    except Exception as e:
+        print('save_servo err:' + str(e))
+
+FWD, OFS = load_servo()
 # FREQ は 50じゃない
 FREQ = 20
 PICH = (2.3 - 0.4) / 180
-PICH_OFS = 1.0
-PICH_OFS_REV = 0.57
 
 tim = Timer(Timer.TIMER0, Timer.CHANNEL0, mode=Timer.MODE_PWM)
 ch = PWM(tim, freq=50, duty=2.5, pin=35)
-arg = {-90:2.5, 0:7.25, 90:12}	# arg:duty
+# arg = {-90:2.5, 0:7.25, 90:12}	# arg:duty
 
 def setAngle(angle):
-    if REV:
-        ang = 180 - angle
-        pich_ofs = PICH_OFS_REV
-    else:
+    if FWD:
         ang = angle
-        pich_ofs = PICH_OFS
-    pulse = ang * PICH + pich_ofs
+    else:
+        ang = 180 - angle
+    pulse = ang * PICH + OFS
     duty = pulse / FREQ * 100
-    print("- %d ---- angle %d --- ang %d ----- duty %f   ofs %f"%(REV, angle, ang, duty, PICH_OFS))
+    print("- %d ---- angle %d --- ang %d ----- duty %f   ofs %f"%(FWD, angle, ang, duty, OFS))
     ch.duty(duty)
 setAngle(0)
 
@@ -346,7 +361,7 @@ try:
             print("*** 1")
             free()
             print("*** 2")
-            ret = menu(" MENU ", ["Power Off","Cancel","Auto Set","Clear","Default","Servo FWD","Servo REV",""])
+            ret = menu(" MENU ", ["Power Off","Cancel","Auto Set","Clear","Default","Servo FWD","Servo REV","Srv Ofs +","Srv Ofs -",""])
             print("*** " + ret)
             free()
             print("*** 3")
@@ -368,17 +383,25 @@ try:
                 print("*** 5")
                 wizard(task)
             if ret == "Servo FWD":
-                REV = False
-                os.remove(REVFILE)
-                print("Servo FWD:" + str(REV))
+                FWD = True
+                save_servo(FWD, OFS)
+                setAngle(0)
+                print("Servo FWD:" + str(FWD))
             if ret == "Servo REV":
-                REV = True
-                try:
-                    with open(REVFILE, 'wt') as f:
-                        f.write('REV')
-                except Exception as e:
-                    pass
-                print("Servo REV:" + str(REV))
+                FWD = False
+                save_servo(FWD, OFS)
+                setAngle(0)
+                print("Servo FWD:" + str(FWD))
+            if ret == "Srv Ofs +":
+                OFS = OFS + 0.05
+                save_servo(FWD, OFS)
+                setAngle(0)
+                print("Servo OFS:" + str(OFS))
+            if ret == "Srv Ofs -":
+                OFS = OFS - 0.05
+                save_servo(FWD, OFS)
+                setAngle(0)
+                print("Servo OFS:" + str(OFS))
             if ret == "Cancel":
                 play_sound("/sd/oshaku/cancel.wav")
             continue
